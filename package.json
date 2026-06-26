@@ -1,0 +1,12 @@
+{
+  "name": "google-auth-to-apple-passwords",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ga2apple": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
