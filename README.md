@@ -30,6 +30,8 @@ npm test
 node ./src/cli.js
 ```
 
+The repository includes a synthetic `./folder_qr` with safe sample QR exports, so running the CLI with no arguments works out of the box.
+
 With no input argument, the CLI first looks for `./folder_qr` in the current working directory. If it is not there, it falls back to the project's own `folder_qr` next to `src`.
 
 If you want to point it somewhere else, you can still pass a specific file or folder:
@@ -77,7 +79,7 @@ node ./src/cli.js ./folder_qr --csv ./accounts.csv --md ./accounts.md
 ## Workflow
 
 1. On the phone with Google Authenticator, open `Transfer accounts` -> `Export accounts`.
-2. Save the QR screenshots or photos into `./folder_qr` inside this project.
+2. Save the QR screenshots or photos into a private local folder. You can use `./folder_qr` locally if you want, but the repository copy contains only synthetic samples.
 3. Run the CLI either from the project root with `node ./src/cli.js` or from `src` with `./cli.js`.
 4. With no input argument, the CLI will use `folder_qr` automatically.
 5. If you prefer, you can still point the CLI at a different image, folder, text file, or raw `otpauth-migration://...` URI explicitly.

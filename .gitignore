@@ -1,4 +1,8 @@
 .DS_Store
-folder_qr/
+folder_qr.private/
+folder_qr/*
+!folder_qr/README.md
+!folder_qr/sample-1.png
+!folder_qr/sample-2.png
 accounts.csv
 accounts.md
