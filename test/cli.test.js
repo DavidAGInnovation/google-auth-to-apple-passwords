@@ -1,9 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const cliPath = join(repoRoot, 'src', 'cli.js');
 
 const ALGORITHM = {
   SHA1: 1
@@ -109,7 +113,7 @@ test('CLI reads a migration URI from a file and prints Apple setup data', () => 
 
   const output = execFileSync(
     'node',
-    ['/Users/davidarnal/work/google-auth-to-apple-passwords/src/cli.js', inputPath],
+    [cliPath, inputPath],
     { encoding: 'utf8' }
   );
 
@@ -125,7 +129,7 @@ test('CLI reads a QR image file and prints Apple setup data', () => {
 
   const output = execFileSync(
     'node',
-    ['/Users/davidarnal/work/google-auth-to-apple-passwords/src/cli.js', imagePath],
+    [cliPath, imagePath],
     { encoding: 'utf8' }
   );
 
@@ -149,7 +153,7 @@ test('CLI reads a folder of QR images and prints all decoded accounts', () => {
 
   const output = execFileSync(
     'node',
-    ['/Users/davidarnal/work/google-auth-to-apple-passwords/src/cli.js', folderPath],
+    [cliPath, folderPath],
     { encoding: 'utf8' }
   );
 
@@ -174,7 +178,7 @@ test('CLI can export decoded accounts to CSV and Markdown files', () => {
   const output = execFileSync(
     'node',
     [
-      '/Users/davidarnal/work/google-auth-to-apple-passwords/src/cli.js',
+      cliPath,
       folderPath,
       '--csv',
       csvPath,
@@ -208,7 +212,7 @@ test('CLI uses folder_qr by default when no input argument is provided', () => {
 
   const output = execFileSync(
     'node',
-    ['/Users/davidarnal/work/google-auth-to-apple-passwords/src/cli.js'],
+    [cliPath],
     { encoding: 'utf8', cwd: tempDir }
   );
 
@@ -218,15 +222,26 @@ test('CLI uses folder_qr by default when no input argument is provided', () => {
 });
 
 test('CLI launched from src falls back to the project folder_qr directory', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'ga2apple-project-'));
+  const projectDir = join(tempDir, 'project');
+  const projectSrcDir = join(projectDir, 'src');
+  const projectQrDir = join(projectDir, 'folder_qr');
+  cpSync(join(repoRoot, 'src'), projectSrcDir, { recursive: true });
+  mkdirSync(projectQrDir, { recursive: true });
+  generateQrImage(
+    buildMigrationUri({ secret: 'hello', name: 'alice@example.com', issuer: 'GitHub', batchId: 10 }),
+    join(projectQrDir, 'default.png')
+  );
+
   const output = execFileSync(
     'node',
     ['./cli.js'],
     {
       encoding: 'utf8',
-      cwd: '/Users/davidarnal/work/google-auth-to-apple-passwords/src'
+      cwd: projectSrcDir
     }
   );
 
-  assert.match(output, /Decoded 33 accounts/);
-  assert.match(output, /Sources: q3\.jpg, q4\.jpg, qr_1\.jpg, qr_2\.jpg/);
+  assert.match(output, /Decoded 1 account/);
+  assert.match(output, /GitHub:alice@example\.com/);
 });

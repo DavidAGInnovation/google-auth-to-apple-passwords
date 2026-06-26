@@ -2,6 +2,12 @@
 
 Local-only CLI for decoding Google Authenticator export payloads into per-account setup keys you can re-enter in Apple Passwords.
 
+## Important safety note
+
+- Never commit Google Authenticator export QR images, migration URIs, decoded setup keys, or generated account exports.
+- The repository `.gitignore` intentionally excludes `folder_qr/`, `accounts.csv`, and `accounts.md` for that reason.
+- Treat every decoded setup key like a password and delete temporary files when you are done.
+
 ## What it does
 
 - Decodes `otpauth-migration://offline?data=...` URIs from Google Authenticator exports
@@ -85,3 +91,4 @@ The optional CSV and Markdown exports are intended to make that manual entry pro
 - Treat the decoded setup keys like passwords.
 - Keep the migration URI and any generated output local.
 - Delete temporary files when the migration is finished.
+- Do not publish real QR screenshots, migration payloads, or decoded exports to GitHub.
